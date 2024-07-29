@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; /* Default font style */
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+            padding: 15px;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .column, .preview-section {
+            flex: 1;
+            margin: 0 10px;
+        }
+        .column {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .preview-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .button-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:focus {
+            outline: none;
+        }
+        pre {
+            height: 400px;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #f9f9f9;
+            white-space: pre-wrap; /* Ensure text wraps in pre */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        td {
+            background-color: #fff;
+        }
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .footer a {
+            color: #1e90ff;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .links-container {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+        .links-container a {
+            margin: 0 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .links-container a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>JSON Generator</h1>
+    <div class="button-container">
+        <button onclick="combineJSON()">Combine</button>
+        <button onclick="clearAll()">Clear All</button>
+        <button onclick="exportJSON()">Export to data-proxy.json</button>
+    </div>
+    <div class="container">
+        <div class="column">
+            <h2>Input Data</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>acc_info</th>
+                        <th>proxy_info</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><textarea id="acc_info" placeholder="query_id=1&#10;query_id=2"></textarea></td>
+                        <td><textarea id="proxy_info" placeholder="http://user1:pass1@ip1:port1&#10;http://user2:pass2@ip2:port2"></textarea></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="preview-section">
+            <h2>Final JSON Preview</h2>
+            <pre id="finalJSON" contenteditable="true"></pre>
+        </div>
+    </div>
+
+    <div class="links-container">
+        <a href="https://github.com/smart-airdrop" target="_blank">GitHub</a> | 
+        <a href="https://t.me/smartairdrop2120" target="_blank">Telegram Group</a> | 
+        <a href="https://t.me/smartairdrop_channel" target="_blank">Telegram Channel</a>
+    </div>
+
+    <div class="footer">
+        Created by Smart Airdrop
+    </div>
+
+    <script>
+        function combineJSON() {
+            const acc_info = document.getElementById('acc_info').value.trim().split('\n');
+            const proxy_info = document.getElementById('proxy_info').value.trim().split('\n');
+
+            if (!acc_info.length || !proxy_info.length || (acc_info.length === 1 && !acc_info[0]) || (proxy_info.length === 1 && !proxy_info[0])) {
+                alert("Please enter data in both acc_info and proxy_info columns.");
+                return;
+            }
+
+            if (acc_info.length !== proxy_info.length) {
+                alert("The number of rows in acc_info and proxy_info do not match!");
+                return;
+            }
+
+            const accounts = [];
+            for (let i = 0; i < acc_info.length; i++) {
+                if (acc_info[i] && proxy_info[i]) {
+                    accounts.push({ acc_info: acc_info[i], proxy_info: proxy_info[i] });
+                }
+            }
+
+            const finalJSON = { accounts };
+            document.getElementById('finalJSON').textContent = JSON.stringify(finalJSON, null, 2);
+        }
+
+        function clearAll() {
+            document.getElementById('acc_info').value = '';
+            document.getElementById('proxy_info').value = '';
+            document.getElementById('finalJSON').textContent = '';
+        }
+
+        function exportJSON() {
+            const jsonContent = document.getElementById('finalJSON').textContent;
+            if (!jsonContent.trim()) {
+                alert("No data in JSON preview to export!");
+                return;
+            }
+
+            const blob = new Blob([jsonContent], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'data-proxy.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
